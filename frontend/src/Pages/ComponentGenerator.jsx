@@ -35,7 +35,7 @@ const ComponentGenerator = () => {
   }
 
   const ai = new GoogleGenAI({
-    apiKey: "AIzaSyCjOrjISxWm17EnStrMkYXyWf_5O6TwsrI"
+    apiKey: import.meta.env.VITE_GEMINI_API_KEY,
   });
 
   async function getResponse() {
