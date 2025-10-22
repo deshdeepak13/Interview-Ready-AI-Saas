@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import UserProvider from "./Context/userContext";
 // import Sidebar from "./components/Sidebar";
-import DashboardLayout from "./components/DashboardLayout";
+// import DashboardLayout from "./components/DashboardLayout";
+import DashboardLayout from "./components/layout/DashboardLayout";
 
 function App() {
   return (

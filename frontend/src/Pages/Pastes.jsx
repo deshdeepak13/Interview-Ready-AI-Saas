@@ -3,96 +3,196 @@ import React, { useState, useEffect } from "react";
 const Pastes = () => {
   const [text, setText] = useState("");
   const [pastes, setPastes] = useState([]);
+const [isLoaded, setIsLoaded] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [displayFormat, setDisplayFormat] = useState("text");
 
   // Load from localStorage on mount
   useEffect(() => {
-    const storedPastes = JSON.parse(localStorage.getItem("pastes")) || [];
-    setPastes(storedPastes);
-  }, []);
+  const stored = localStorage.getItem("pastes");
+  if (stored) {
+    try {
+      setPastes(JSON.parse(stored));
+    } catch {
+      setPastes([]);
+    }
+  }
+  setIsLoaded(true); // mark load complete
+}, []);
 
-  // Save to localStorage whenever pastes change
-  useEffect(() => {
+  
+// Save only AFTER data is loaded
+useEffect(() => {
+  if (isLoaded) {
     localStorage.setItem("pastes", JSON.stringify(pastes));
-  }, [pastes]);
+  }
+}, [pastes, isLoaded]);
 
+  // Save or update a paste
   const handleSave = () => {
     if (!text.trim()) return;
 
     if (editingIndex !== null) {
       const updated = [...pastes];
-      updated[editingIndex] = text;
+      updated[editingIndex].content = text;
+      updated[editingIndex].format = displayFormat;
+      updated[editingIndex].updatedAt = new Date().toISOString();
       setPastes(updated);
       setEditingIndex(null);
     } else {
-      setPastes([text, ...pastes]);
+      const newPaste = {
+        id: Date.now(),
+        content: text,
+        format: displayFormat,
+        createdAt: new Date().toISOString(),
+      };
+      setPastes([newPaste, ...pastes]);
     }
     setText("");
   };
 
+  // Edit existing paste
   const handleEdit = (index) => {
-    setText(pastes[index]);
+    setText(pastes[index].content);
+    setDisplayFormat(pastes[index].format);
     setEditingIndex(index);
   };
 
+  // Delete paste
   const handleDelete = (index) => {
     const updated = pastes.filter((_, i) => i !== index);
     setPastes(updated);
   };
 
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
+  // Copy to clipboard
+  const handleCopy = (content) => {
+    navigator.clipboard.writeText(content);
     alert("Copied to clipboard!");
   };
 
+  // Format paste for display
+  const formatContent = (paste) => {
+    try {
+      switch (paste.format) {
+        case "json":
+          return JSON.stringify(JSON.parse(paste.content), null, 2);
+        default:
+          return paste.content;
+      }
+    } catch {
+      return paste.content;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold mb-4">Paste Manager</h1>
-      
-      <div className="w-full max-w-xl bg-white p-4 rounded-lg shadow-md mb-6">
+    <div className="min-h-screen bg-gray-900 flex flex-col items-center p-6">
+      <h1 className="text-3xl font-bold text-white mb-6">Paste Manager</h1>
+
+      {/* Input Section */}
+      <div className="w-full max-w-4xl bg-gray-800 rounded-lg border border-gray-700 shadow-lg mb-6 overflow-hidden">
+        <div className="bg-gray-700 px-4 py-3 border-b border-gray-600 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-gray-300 text-sm ml-2">new-paste.txt</span>
+          </div>
+        </div>
+
         <textarea
-          className="w-full h-24 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="Paste your text here..."
+          className="w-full h-32 bg-gray-800 text-gray-100 p-4 font-mono text-sm focus:outline-none resize-none"
+          placeholder="Paste your text, code, or JSON here..."
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        <button
-          onClick={handleSave}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-        >
-          {editingIndex !== null ? "Update Paste" : "Save Paste"}
-        </button>
+
+        <div className="bg-gray-700 px-4 py-3 border-t border-gray-600 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <span className="text-gray-300 text-sm">Format:</span>
+            <select
+              value={displayFormat}
+              onChange={(e) => setDisplayFormat(e.target.value)}
+              className="bg-gray-600 text-gray-100 px-3 py-1 rounded border border-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="text">Text</option>
+              <option value="code">Code</option>
+              <option value="json">JSON</option>
+            </select>
+          </div>
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all font-medium"
+          >
+            {editingIndex !== null ? "Update Paste" : "Save Paste"}
+          </button>
+        </div>
       </div>
 
-      <div className="w-full max-w-xl">
+      {/* Pastes List */}
+      <div className="w-full max-w-4xl">
         {pastes.length === 0 ? (
-          <p className="text-gray-500 text-center">No pastes yet</p>
+          <div className="text-center py-12">
+            <div className="text-gray-500 text-lg mb-2">No pastes yet</div>
+            <div className="text-gray-400 text-sm">
+              Create your first paste above
+            </div>
+          </div>
         ) : (
           pastes.map((paste, index) => (
             <div
-              key={index}
-              className="bg-white p-4 mb-3 rounded shadow flex flex-col sm:flex-row justify-between items-start sm:items-center"
+              key={paste.id}
+              className="bg-gray-800 rounded-lg border border-gray-700 shadow-lg mb-4 overflow-hidden"
             >
-              <p className="break-words mb-2 sm:mb-0">{paste}</p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleCopy(paste)}
-                  className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                >
-                  Copy
-                </button>
-                <button
-                  onClick={() => handleEdit(index)}
-                  className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(index)}
-                  className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                >
-                  Delete
-                </button>
+              {/* Header */}
+              <div className="bg-gray-700 px-4 py-3 border-b border-gray-600 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-gray-300 text-sm ml-2">
+                    paste-{index + 1}.
+                    {paste.format === "json"
+                      ? "json"
+                      : paste.format === "code"
+                      ? "js"
+                      : "txt"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleCopy(paste.content)}
+                    className="px-3 py-1 bg-gray-600 text-gray-200 rounded hover:bg-gray-500 transition-colors text-sm font-medium"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    onClick={() => handleEdit(index)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors text-sm font-medium"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500 transition-colors text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-4 bg-gray-800">
+                <pre className="text-gray-100 font-mono text-sm whitespace-pre-wrap break-words">
+                  {formatContent(paste)}
+                </pre>
+              </div>
+
+              {/* Footer */}
+              <div className="bg-gray-700 px-4 py-2 border-t border-gray-600 text-xs text-gray-400 flex justify-between">
+                <span>
+                  Created: {new Date(paste.createdAt).toLocaleString()}
+                </span>
+                <span>Length: {paste.content.length} characters</span>
               </div>
             </div>
           ))

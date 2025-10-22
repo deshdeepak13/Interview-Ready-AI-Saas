@@ -12,20 +12,23 @@
         font-family: var(--font-display);
     }
     body{
-        background-color: #fcfbfc;
+        background-color: #111827;
+        color: #f9fafb;
         overflow-x: hidden;
     }
 }
+
 .custom-scrollbar::-webkit-scrollbar{
     width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb{
-    background-color: rgba(100,100,100, 0.4 );
+    background-color: rgba(156, 163, 175, 0.4);
     border-radius: 10px; 
 }
+
 .custom-scrollbar::-webkit-scrollbar-track{
-    background-color: transparent;
+    background-color: rgba(31, 41, 55, 0.2);
 }
 
 @layer utilities{
@@ -41,6 +44,7 @@
     .animate-text-shine{
         animation: shine 3s ease-in-out infinite alternate;
     }
+    
     @keyframes blob1 {
         0%,100% {
             transform: translate(0px,0px) scale(1);
@@ -52,7 +56,8 @@
             transform: translate(-20px,20px) scale(0.9);
         }
     }
-     @keyframes blob2 {
+    
+    @keyframes blob2 {
         0%,100% {
             transform: translate(0px,0px) scale(1);
         }
@@ -63,7 +68,8 @@
             transform: translate(20px,-40px) scale(0.95);
         }
     }
-     @keyframes blob3 {
+    
+    @keyframes blob3 {
         0%,100% {
             transform: translate(0px,0px) scale(1);
         }
@@ -74,23 +80,121 @@
             transform: translate(-30px,-30px) scale(0.5);
         }
     }
+    
     .blob1 {
         animation: blob1 8s ease-in-out infinite;
     }
+    
     .blob2 {
         animation: blob2 10s ease-in-out infinite;
     }
+    
     .blob3 {
         animation: blob3 12s ease-in-out infinite;
     }
+    
+    /* Dark theme specific utilities */
+    .bg-dark-surface {
+        background-color: #1f2937;
+    }
+    
+    .bg-dark-card {
+        background-color: #374151;
+    }
+    
+    .bg-dark-elevated {
+        background-color: #4b5563;
+    }
+    
+    .text-primary-light {
+        color: #f9fafb;
+    }
+    
+    .text-secondary-light {
+        color: #d1d5db;
+    }
+    
+    .text-muted-light {
+        color: #9ca3af;
+    }
+    
+    .border-dark {
+        border-color: #374151;
+    }
+    
+    .border-dark-light {
+        border-color: #4b5563;
+    }
 }
-.input-box{
-    @apply w-full flex justify-between gap-3 text-sm text-black bg-gray-50/50 rounded px-4 py-3 mb-4 mt-3 border border-gray-100 outline-none focus-within:border-orange-300;
 
+.input-box{
+    @apply w-full flex justify-between gap-3 text-sm text-white bg-gray-800/50 rounded-lg px-4 py-3 mb-4 mt-3 border border-gray-600 outline-none focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/20 transition-colors;
 }
+
 .btn-primary{
-    @apply w-full flex items-center justify-center gap-3 text-sm font-medium text-white bg-black shadow-lg my-1 shadow-orange-600/5 p-[10px] rounded-md hover:bg-orange-600/15 hover:text-black cursor-pointer;
+    @apply w-full flex items-center justify-center gap-3 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg my-1 shadow-orange-600/20 p-[10px] rounded-lg hover:from-orange-600 hover:to-orange-700 cursor-pointer transition-all duration-200;
 }
+
 .btn-small{
-    @apply w-full flex items-center justify-center gap-3 bg-linear-to-r from-[#FF9324] to-[#e99a4b] text-sm font-semibold text-white px-7 py-2 rounded-lg hover:bg-black hover:text-white transition-colors cursor-pointer hover:shadow-2xl hover:shadow-orange-300;
+    @apply w-full flex items-center justify-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-sm font-semibold text-white px-7 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all cursor-pointer hover:shadow-2xl hover:shadow-orange-500/30;
+}
+
+.btn-secondary{
+    @apply w-full flex items-center justify-center gap-3 text-sm font-medium text-gray-300 bg-gray-700 shadow-lg my-1 p-[10px] rounded-lg hover:bg-gray-600 hover:text-white cursor-pointer transition-all duration-200 border border-gray-600;
+}
+
+.input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Additional dark theme form styles */
+.input-dark {
+    @apply bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20;
+}
+
+.select-dark {
+    @apply bg-gray-800 border-gray-600 text-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20;
+}
+
+.card-dark {
+    @apply bg-gray-800 border border-gray-700 rounded-xl shadow-lg;
+}
+
+.surface-dark {
+    @apply bg-gray-900 border border-gray-800 rounded-lg;
+}
+
+/* Code editor like styling for dark theme */
+.code-editor-dark {
+    @apply bg-gray-900 border border-gray-700 rounded-lg font-mono text-sm text-gray-100;
+}
+
+.code-header-dark {
+    @apply bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between;
+}
+
+.code-content-dark {
+    @apply bg-gray-900 p-4 overflow-x-auto;
+}
+
+/* Glass morphism effects for dark theme */
+.glass-dark {
+    @apply bg-gray-800/80 backdrop-blur-md border border-gray-700/50 shadow-xl;
+}
+
+.glass-light {
+    @apply bg-gray-800/40 backdrop-blur-md border border-gray-600/30;
+}
+
+/* Hide scrollbar for Chrome, Safari and Edge */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none; /* IE and old Edge */
 }

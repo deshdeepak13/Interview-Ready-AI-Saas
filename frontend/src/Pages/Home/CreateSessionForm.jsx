@@ -69,9 +69,9 @@ function CreateSessionForm() {
         }
     }
   return (
-    <div className='w-[85vw] md:w-[35vw] p-7 flex flex-col justify-center'>
-        <h3 className='text-lg font-semibold text-black'>Start a New Interview Journey</h3>
-        <p className='text-xs text-slate-700 mt-[5px] mb-3'>Fill out a few quick details and unlock your personalized set of interview questions!</p>
+    <div className='w-[85vw] md:w-[35vw] p-7 flex flex-col justify-center bg-gray-800 rounded-lg'>
+        <h3 className='text-lg font-semibold text-white'>Start a New Interview Journey</h3>
+        <p className='text-xs text-gray-300 mt-[5px] mb-3'>Fill out a few quick details and unlock your personalized set of interview questions!</p>
 
         <form onSubmit={handleCreateSession} className='flex flex-col gap-3'>
             <Input
@@ -102,11 +102,11 @@ function CreateSessionForm() {
             placeholder="(Any specific goals or notes for this session)"
             type="text"
             />
-            {error && <p className='text-red-500 text-cs pb-2.5'>{error}</p>}
+            {error && <p className='text-red-400 text-cs pb-2.5'>{error}</p>}
             <button
             type='submit'
             disabled={isLoading}
-            className='btn-primary w-full mt-2'
+            className='w-full mt-2 bg-gradient-to-r from-[#FF9324] to-[#e99a4b] text-white font-semibold py-3 px-4 rounded-lg hover:from-[#ffa94d] hover:to-[#ffb366] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2'
             >
                {isLoading && <SpinnerLoader/>} Create Session
             </button>

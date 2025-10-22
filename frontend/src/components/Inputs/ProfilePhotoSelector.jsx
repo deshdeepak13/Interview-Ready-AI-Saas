@@ -40,17 +40,17 @@ function ProfilePhotoSelector({ image, setImage,preview,setPreview }) {
         onChange={handleImageChange}
       />
       {!image ? (
-        <div className=' bg-orange-50 w-20 h-20 rounded-full flex justify-center items-center relative'>
-            <LuUser className='text-4xl text-orange-500' />
-            <button onClick={onChooseFile} className='bg-linear-to-r from-orange-500/85 to-orange-600 text-white rounded-full h-8 w-8 flex justify-center items-center absolute -bottom-1 -right-1 cursor-pointer'>
-                <LuUpload/>
+        <div className='bg-gray-700 border-2 border-gray-600 w-20 h-20 rounded-full flex justify-center items-center relative hover:border-orange-500/50 transition-colors'>
+            <LuUser className='text-4xl text-orange-400' />
+            <button onClick={onChooseFile} className='bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full h-8 w-8 flex justify-center items-center absolute -bottom-1 -right-1 cursor-pointer hover:from-orange-600 hover:to-orange-700 transition-colors shadow-lg'>
+                <LuUpload className='text-sm'/>
             </button>
         </div>
       ) : (
         <div className='relative'>
-            <img className='w-20 h-20 rounded-full object-cover' src={preview || previewUrl} alt="Profile Preview" />
-            <button onClick={handleRemoveImage} className='w-8 h-8 flex justify-center items-center bg-red-500 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer'>
-                <LuTrash />
+            <img className='w-20 h-20 rounded-full object-cover border-2 border-gray-600' src={preview || previewUrl} alt="Profile Preview" />
+            <button onClick={handleRemoveImage} className='w-8 h-8 flex justify-center items-center bg-red-600 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer hover:bg-red-700 transition-colors shadow-lg'>
+                <LuTrash className='text-sm' />
             </button>
         </div>
       )}

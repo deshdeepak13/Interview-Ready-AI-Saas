@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-// import Navbar from '../components/Navbar'
 import Select from 'react-select';
 import { BsStars } from 'react-icons/bs';
 import { HiOutlineCode } from 'react-icons/hi';
@@ -11,11 +10,8 @@ import { FiRefreshCcw } from 'react-icons/fi';
 import { GoogleGenAI } from "@google/genai";
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
-// import './componentgenerator.css';
 
 const ComponentGenerator = () => {
-
-  // ✅ Fixed typos in options
   const options = [
     { value: 'html-css', label: 'HTML + CSS' },
     { value: 'html-tailwind', label: 'HTML + Tailwind CSS' },
@@ -33,18 +29,15 @@ const ComponentGenerator = () => {
   const [isNewTabOpen, setIsNewTabOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // ✅ Extract code safely
   function extractCode(response) {
     const match = response.match(/```(?:\w+)?\n?([\s\S]*?)```/);
     return match ? match[1].trim() : response.trim();
   }
 
-  // ⚠️ API Key (you said you want it inside the file)
   const ai = new GoogleGenAI({
-    apiKey: "AIzaSyC2j5DJVAwpzCkiIBttd2IOrAebXcqH5yA"
+    apiKey: "AIzaSyCjOrjISxWm17EnStrMkYXyWf_5O6TwsrI"
   });
 
-  // ✅ Generate code
   async function getResponse() {
     if (!prompt.trim()) return toast.error("Please describe your component first");
 
@@ -79,7 +72,6 @@ Requirements:
     }
   };
 
-  // ✅ Copy Code
   const copyCode = async () => {
     if (!code.trim()) return toast.error("No code to copy");
     try {
@@ -91,7 +83,6 @@ Requirements:
     }
   };
 
-  // ✅ Download Code
   const downnloadFile = () => {
     if (!code.trim()) return toast.error("No code to download");
 
@@ -107,145 +98,212 @@ Requirements:
   };
 
   return (
-    <>
-      {/* <Navbar /> */}
+  <div className="flex-1 min-h-screen bg-gray-900 text-white transition-all duration-300 ease-in-out p-4 sm:p-6 lg:ml-16">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
 
-      {/* ✅ Better responsive layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 lg:px-16">
-        {/* Left Section */}
-        <div className="w-full py-6 rounded-xl bg-[#141319] mt-5 p-5">
-          <h3 className='text-[25px] font-semibold sp-text'>AI Component Generator</h3>
-          <p className='text-gray-400 mt-2 text-[16px]'>Describe your component and let AI code it for you.</p>
+        {/* Left Section - Input */}
+        <div className="w-full p-6 rounded-xl bg-gray-800 border border-gray-700">
+          <div className="mb-6">
+            <h3 className='text-2xl font-semibold text-white'>AI Component Generator</h3>
+            <p className='text-gray-400 mt-2'>Describe your component and let AI code it for you.</p>
+          </div>
 
-          <p className='text-[15px] font-[700] mt-4'>Framework</p>
-          <Select
-            className='mt-2'
-            options={options}
-            value={frameWork}
-            styles={{
-              control: (base) => ({
-                ...base,
-                backgroundColor: "#111",
-                borderColor: "#333",
-                color: "#fff",
-                boxShadow: "none",
-                "&:hover": { borderColor: "#555" }
-              }),
-              menu: (base) => ({
-                ...base,
-                backgroundColor: "#111",
-                color: "#fff"
-              }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isSelected
-                  ? "#333"
-                  : state.isFocused
-                    ? "#222"
-                    : "#111",
-                color: "#fff",
-                "&:active": { backgroundColor: "#444" }
-              }),
-              singleValue: (base) => ({ ...base, color: "#fff" }),
-              placeholder: (base) => ({ ...base, color: "#aaa" }),
-              input: (base) => ({ ...base, color: "#fff" })
-            }}
-            onChange={(selected) => setFrameWork(selected)}
-          />
+          <div className="space-y-4">
+            <div>
+              <label className='block text-sm font-medium text-gray-300 mb-2'>Framework</label>
+              <Select
+                options={options}
+                value={frameWork}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor: "#374151",
+                    borderColor: "#4B5563",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    minHeight: "44px",
+                    "&:hover": { borderColor: "#6B7280" }
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    backgroundColor: "#374151",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    border: "1px solid #4B5563"
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isSelected
+                      ? "#f97316"
+                      : state.isFocused
+                        ? "#4B5563"
+                        : "#374151",
+                    color: "#fff",
+                    "&:active": { backgroundColor: "#f97316" }
+                  }),
+                  singleValue: (base) => ({ 
+                    ...base, 
+                    color: "#fff",
+                    fontWeight: "500"
+                  }),
+                  placeholder: (base) => ({ ...base, color: "#9CA3AF" }),
+                  input: (base) => ({ ...base, color: "#fff" })
+                }}
+                onChange={(selected) => setFrameWork(selected)}
+              />
+            </div>
 
-          <p className='text-[15px] font-[700] mt-5'>Describe your component</p>
-          <textarea
-            onChange={(e) => setPrompt(e.target.value)}
-            value={prompt}
-            className='w-full min-h-[200px] rounded-xl bg-[#09090B] mt-3 p-3 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-purple-500 resize-none'
-            placeholder="Describe your component in detail and AI will generate it..."
-          ></textarea>
+            <div>
+              <label className='block text-sm font-medium text-gray-300 mb-2'>Describe your component</label>
+              <textarea
+                onChange={(e) => setPrompt(e.target.value)}
+                value={prompt}
+                className='w-full min-h-[160px] rounded-lg bg-gray-700 border border-gray-600 p-4 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none transition-colors'
+                placeholder="Describe your component in detail and AI will generate it..."
+              ></textarea>
+            </div>
 
-          <div className="flex items-center justify-between mt-3">
-            <p className='text-gray-400 text-sm'>Click on generate button to get your code</p>
-            <button
-              onClick={getResponse}
-              className="flex items-center p-3 rounded-lg border-0 bg-gradient-to-r from-purple-400 to-purple-600 px-5 gap-2 transition-all hover:opacity-80 hover:scale-105 active:scale-95"
-            >
-              {loading ? <ClipLoader color='white' size={18} /> : <BsStars />}
-              Generate
-            </button>
+            <div className="flex items-center justify-between pt-2">
+              <p className='text-gray-400 text-sm'>Click on generate button to get your code</p>
+              <button
+                onClick={getResponse}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white font-medium hover:from-orange-600 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? <ClipLoader color='white' size={18} /> : <BsStars className="text-lg" />}
+                {loading ? 'Generating...' : 'Generate'}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Right Section */}
-        <div className="relative mt-2 w-full h-[80vh] bg-[#141319] rounded-xl overflow-hidden">
-          {
-            !outputScreen ? (
-              <div className="w-full h-full flex items-center flex-col justify-center">
-                <div className="p-5 w-[70px] flex items-center justify-center text-[30px] h-[70px] rounded-full bg-gradient-to-r from-purple-400 to-purple-600">
-                  <HiOutlineCode />
-                </div>
-                <p className='text-[16px] text-gray-400 mt-3'>Your component & code will appear here.</p>
+        {/* Right Section - Output */}
+        <div className="w-full h-[600px] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden flex flex-col">
+          {!outputScreen ? (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center mb-4">
+                <HiOutlineCode className="text-2xl text-white" />
               </div>
-            ) : (
-              <>
-                {/* Tabs */}
-                <div className="bg-[#17171C] w-full h-[50px] flex items-center gap-3 px-3">
-                  <button
-                    onClick={() => setTab(1)}
-                    className={`w-1/2 py-2 rounded-lg transition-all ${tab === 1 ? "bg-purple-600 text-white" : "bg-zinc-800 text-gray-300"}`}
-                  >
-                    Code
-                  </button>
-                  <button
-                    onClick={() => setTab(2)}
-                    className={`w-1/2 py-2 rounded-lg transition-all ${tab === 2 ? "bg-purple-600 text-white" : "bg-zinc-800 text-gray-300"}`}
-                  >
-                    Preview
-                  </button>
-                </div>
+              <h4 className="text-lg font-medium text-white mb-2">No Component Generated</h4>
+              <p className="text-gray-400">Your component and code will appear here after generation.</p>
+            </div>
+          ) : (
+            <>
+              {/* Tabs */}
+              <div className="flex bg-gray-700 border-b border-gray-600">
+                <button
+                  onClick={() => setTab(1)}
+                  className={`flex-1 py-3 font-medium transition-colors ${
+                    tab === 1 
+                      ? "bg-gray-800 text-white border-b-2 border-orange-500" 
+                      : "text-gray-400 hover:text-gray-300"
+                  }`}
+                >
+                  Code
+                </button>
+                <button
+                  onClick={() => setTab(2)}
+                  className={`flex-1 py-3 font-medium transition-colors ${
+                    tab === 2 
+                      ? "bg-gray-800 text-white border-b-2 border-orange-500" 
+                      : "text-gray-400 hover:text-gray-300"
+                  }`}
+                >
+                  Preview
+                </button>
+              </div>
 
-                {/* Toolbar */}
-                <div className="bg-[#17171C] w-full h-[50px] flex items-center justify-between px-4">
-                  <p className='font-bold text-gray-200'>Code Editor</p>
-                  <div className="flex items-center gap-2">
-                    {tab === 1 ? (
-                      <>
-                        <button onClick={copyCode} className="w-10 h-10 rounded-xl border border-zinc-800 flex items-center justify-center hover:bg-[#333]"><IoCopy /></button>
-                        <button onClick={downnloadFile} className="w-10 h-10 rounded-xl border border-zinc-800 flex items-center justify-center hover:bg-[#333]"><PiExportBold /></button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={() => setIsNewTabOpen(true)} className="w-10 h-10 rounded-xl border border-zinc-800 flex items-center justify-center hover:bg-[#333]"><ImNewTab /></button>
-                        <button onClick={() => setRefreshKey(prev => prev + 1)} className="w-10 h-10 rounded-xl border border-zinc-800 flex items-center justify-center hover:bg-[#333]"><FiRefreshCcw /></button>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Editor / Preview */}
-                <div className="h-full">
+              {/* Toolbar */}
+              <div className="flex items-center justify-between px-4 py-3 bg-gray-700 border-b border-gray-600">
+                <p className='font-medium text-gray-200'>Component {tab === 1 ? 'Code' : 'Preview'}</p>
+                <div className="flex items-center gap-2">
                   {tab === 1 ? (
-                    <Editor value={code} height="100%" theme='vs-dark' language="html" />
+                    <>
+                      <button 
+                        onClick={copyCode}
+                        className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-600 transition-colors"
+                        title="Copy code"
+                      >
+                        <IoCopy className="text-lg" />
+                      </button>
+                      <button 
+                        onClick={downnloadFile}
+                        className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-600 transition-colors"
+                        title="Export code"
+                      >
+                        <PiExportBold className="text-lg" />
+                      </button>
+                    </>
                   ) : (
-                    <iframe key={refreshKey} srcDoc={code} className="w-full h-full bg-white text-black"></iframe>
+                    <>
+                      <button 
+                        onClick={() => setIsNewTabOpen(true)}
+                        className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-600 transition-colors"
+                        title="Open in new tab"
+                      >
+                        <ImNewTab className="text-lg" />
+                      </button>
+                      <button 
+                        onClick={() => setRefreshKey(prev => prev + 1)}
+                        className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-600 transition-colors"
+                        title="Refresh preview"
+                      >
+                        <FiRefreshCcw className="text-lg" />
+                      </button>
+                    </>
                   )}
                 </div>
-              </>
-            )
-          }
+              </div>
+
+              {/* Content Area */}
+              <div className="flex-1">
+                {tab === 1 ? (
+                  <Editor 
+                    value={code} 
+                    height="100%" 
+                    theme='vs-dark' 
+                    language="html" 
+                    options={{
+                      fontSize: 14,
+                      minimap: { enabled: true },
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                    }}
+                  />
+                ) : (
+                  <iframe 
+                    key={refreshKey} 
+                    srcDoc={code} 
+                    className="w-full h-full bg-white"
+                    title="Component Preview"
+                  />
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      {/* ✅ Fullscreen Preview Overlay */}
+      {/* Fullscreen Preview Modal */}
       {isNewTabOpen && (
-        <div className="absolute inset-0 bg-white w-screen h-screen overflow-auto">
-          <div className="text-black w-full h-[60px] flex items-center justify-between px-5 bg-gray-100">
-            <p className='font-bold'>Preview</p>
-            <button onClick={() => setIsNewTabOpen(false)} className="w-10 h-10 rounded-xl border border-zinc-300 flex items-center justify-center hover:bg-gray-200">
-              <IoCloseSharp />
+        <div className="fixed inset-0 bg-gray-900 z-50 flex flex-col">
+          <div className="flex items-center justify-between px-6 py-4 bg-gray-800 border-b border-gray-700">
+            <h3 className="text-lg font-semibold text-white">Component Preview</h3>
+            <button 
+              onClick={() => setIsNewTabOpen(false)}
+              className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+            >
+              <IoCloseSharp className="text-xl" />
             </button>
           </div>
-          <iframe srcDoc={code} className="w-full h-[calc(100vh-60px)]"></iframe>
+          <iframe 
+            srcDoc={code} 
+            className="flex-1 w-full"
+            title="Fullscreen Component Preview"
+          />
         </div>
       )}
-    </>
+    </div>
   )
 }
 

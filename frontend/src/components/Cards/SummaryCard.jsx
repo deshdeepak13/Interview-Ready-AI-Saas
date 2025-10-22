@@ -15,7 +15,7 @@ function SummaryCard({
   onDelete,
 }) {
   return (
-    <div className="bg-white border border-gray-300/40 rounded-xl p-2 overflow-hidden cursor-pointer hover:shadow-xl shadow-gray-100 relative group" onClick={onSelect}>
+    <div className="bg-gray-800 border border-gray-600/40 rounded-xl p-2 overflow-hidden cursor-pointer hover:shadow-xl shadow-gray-900/50 hover:border-gray-500/60 relative group transition-all duration-200" onClick={onSelect}>
       <div
         className="rounded-lg p-4 cursor-pointer relative"
         style={{
@@ -23,22 +23,22 @@ function SummaryCard({
         }}
       >
         <div className="flex items-start">
-          <div className="flex-shrink-0 w-12 h-12 bg-white rounded-md flex items-center justify-center mr-4">
-            <span className="text-lg font-semibold text-black">{getInitials(role)}</span>
+          <div className="flex-shrink-0 w-12 h-12 bg-gray-700 rounded-md flex items-center justify-center mr-4 border border-gray-600">
+            <span className="text-lg font-semibold text-white">{getInitials(role)}</span>
           </div>
           {/* content cont */}
           <div className="flex-grow">
             <div className="flex justify-between items-start">
               {/* title and skills */}
               <div>
-                <h2 className="text-[17px] font-medium">{role}</h2>
-                <p className="text-xs text-medium text-gray-900">{topicToFocus}</p>
+                <h2 className="text-[17px] font-medium text-white">{role}</h2>
+                <p className="text-xs text-medium text-gray-200 mt-1">{topicToFocus}</p>
               </div>
             </div>
           </div>
         </div>
         <button
-          className="hidden group-hover:flex items-center gap-2 text-xs text-rose-500 font-medium bg-rose-50 px-3 py-1 rounded text-nowrap border border-rose-100 hover:border-rose-200 cursor-pointer top-0 right-0 absolute"
+          className="hidden group-hover:flex items-center gap-2 text-xs text-rose-300 font-medium bg-rose-900/40 px-3 py-1 rounded text-nowrap border border-rose-800/50 hover:border-rose-600/70 hover:bg-rose-900/60 cursor-pointer top-2 right-2 absolute transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             onDelete();
@@ -49,16 +49,16 @@ function SummaryCard({
       </div>
 
       <div className="px-3 pb-3">
-        <div className="flex items-center gap-3 mt-4">
-          <div className="text-[10px] font-medium text-black px-3 py-1 border-[0.5px] border-gray-900 rounded-full">
+        <div className="flex items-center gap-3 mt-4 flex-wrap">
+          <div className="text-[10px] font-medium text-gray-200 px-3 py-1 border border-gray-500 rounded-full bg-gray-700/50">
             Experience: {experience} {experience == 1 ? "Year" : "Years"}
           </div>
-          <div className="text-[10px] font-medium text-black px-3 py-1 border-[0.5px] border-gray-900 rounded-full">{questions} Q&A</div>
-          <div className="text-[10px] font-medium text-black px-3 py-1 border-[0.5px] border-gray-900 rounded-full">Last Updated: {lastUpdated}</div>
+          <div className="text-[10px] font-medium text-gray-200 px-3 py-1 border border-gray-500 rounded-full bg-gray-700/50">{questions} Q&A</div>
+          <div className="text-[10px] font-medium text-gray-200 px-3 py-1 border border-gray-500 rounded-full bg-gray-700/50">Last Updated: {lastUpdated}</div>
         </div>
 
         {/* Desc */}
-        <p className="text-12px text-gray-500 font-medium line-clamp-2 ">{description}</p>
+        <p className="text-12px text-gray-400 font-medium line-clamp-2 mt-3">{description}</p>
       </div>
     </div>
   );

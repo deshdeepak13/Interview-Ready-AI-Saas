@@ -35,7 +35,7 @@ function Login({setCurrentPage}) {
        if(token){
         localStorage.setItem("token", token)
         updateUser(response.data)
-        navigate("/dashboard")
+        navigate("/interview")
        }
     }catch(err) {
       if(err.response && err.response.data && err.response.data.error) {
