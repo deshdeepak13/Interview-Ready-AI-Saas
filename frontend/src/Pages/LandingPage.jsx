@@ -10,7 +10,7 @@ import {
   LuGraduationCap,
   LuArrowRight,
 } from "react-icons/lu";
-import HERO_IMG from "../assets/Hero.png";
+import HERO_IMG from "../assets/HERO.png";
 import { UserContext } from "../Context/userContext";
 import Modal from "../components/Modal";
 import Login from "../Pages/Auth/Login";
