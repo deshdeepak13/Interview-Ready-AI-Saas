@@ -1,7 +1,7 @@
 // frontend/src/api/urls.js => API paths
 // export const BASE_URL = "http://localhost:8000";
 
-const hostname = window.location.hostname;
+const hostname = import.meta.env.VITE_BACKEND_URL || window.location.hostname;
 
 export const BASE_URL =
   hostname === "localhost"
