@@ -6,7 +6,7 @@ const hostname = import.meta.env.VITE_BACKEND_URL || window.location.hostname;
 export const BASE_URL =
   hostname === "localhost"
     ? "http://localhost:3000"
-    : `http://${hostname}:3000`;
+    : `https://${hostname}:3000`;
 
 export const API_PATHS = {
   AUTH: {
