@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 
 const Pastes = () => {
   const [text, setText] = useState("");
@@ -182,9 +185,40 @@ useEffect(() => {
 
               {/* Content */}
               <div className="p-4 bg-gray-800">
-                <pre className="text-gray-100 font-mono text-sm whitespace-pre-wrap break-words">
-                  {formatContent(paste)}
-                </pre>
+                <div className="p-4 bg-gray-800">
+  {paste.format === "code" ? (
+    <SyntaxHighlighter
+      language="javascript"
+      style={oneDark}
+      customStyle={{
+        backgroundColor: "#1f2937",
+        padding: "1rem",
+        borderRadius: "0.5rem",
+        fontSize: "0.9rem",
+      }}
+    >
+      {paste.content}
+    </SyntaxHighlighter>
+  ) : paste.format === "json" ? (
+    <SyntaxHighlighter
+      language="json"
+      style={oneDark}
+      customStyle={{
+        backgroundColor: "#1f2937",
+        padding: "1rem",
+        borderRadius: "0.5rem",
+        fontSize: "0.9rem",
+      }}
+    >
+      {formatContent(paste)}
+    </SyntaxHighlighter>
+  ) : (
+    <pre className="text-gray-100 font-mono text-sm whitespace-pre-wrap break-words">
+      {paste.content}
+    </pre>
+  )}
+</div>
+
               </div>
 
               {/* Footer */}
