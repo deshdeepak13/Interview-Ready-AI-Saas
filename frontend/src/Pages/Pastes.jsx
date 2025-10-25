@@ -57,7 +57,7 @@ useEffect(() => {
     setDisplayFormat(pastes[index].format);
     setEditingIndex(index);
   };
-
+ 
   // Delete paste
   const handleDelete = (index) => {
     const updated = pastes.filter((_, i) => i !== index);
