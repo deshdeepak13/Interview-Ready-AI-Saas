@@ -2,236 +2,286 @@ import React, { useState, useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-
 const Pastes = () => {
   const [text, setText] = useState("");
-  const [pastes, setPastes] = useState([]);
-const [isLoaded, setIsLoaded] = useState(false);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [folders, setFolders] = useState([]);
+  const [selectedFolder, setSelectedFolder] = useState("General");
+  const [editingInfo, setEditingInfo] = useState({ folder: null, index: null });
+  const [isLoaded, setIsLoaded] = useState(false);
   const [displayFormat, setDisplayFormat] = useState("text");
+  const [label, setLabel] = useState("");
+  const [showSnack, setShowSnack] = useState(false);
 
-  // Load from localStorage on mount
+
   useEffect(() => {
-  const stored = localStorage.getItem("pastes");
-  if (stored) {
-    try {
-      setPastes(JSON.parse(stored));
-    } catch {
-      setPastes([]);
+    const stored = localStorage.getItem("folders");
+    if (stored) {
+      try {
+        setFolders(JSON.parse(stored));
+      } catch {
+        setFolders([{ name: "General", pastes: [] }]);
+      }
+    } else {
+      setFolders([{ name: "General", pastes: [] }]);
     }
-  }
-  setIsLoaded(true); // mark load complete
-}, []);
+    setIsLoaded(true);
+  }, []);
 
-  
-// Save only AFTER data is loaded
-useEffect(() => {
-  if (isLoaded) {
-    localStorage.setItem("pastes", JSON.stringify(pastes));
-  }
-}, [pastes, isLoaded]);
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem("folders", JSON.stringify(folders));
+    }
+  }, [folders, isLoaded]);
 
-  // Save or update a paste
+  const createFolder = () => {
+    const input = document.getElementById("newFolderName");
+    const name = input.value.trim();
+    if (!name) return;
+
+    if (!folders.some((f) => f.name === name)) {
+      setFolders([...folders, { name, pastes: [] }]);
+    }
+
+    setSelectedFolder(name);
+    input.value = "";
+  };
+
   const handleSave = () => {
     if (!text.trim()) return;
 
-    if (editingIndex !== null) {
-      const updated = [...pastes];
-      updated[editingIndex].content = text;
-      updated[editingIndex].format = displayFormat;
-      updated[editingIndex].updatedAt = new Date().toISOString();
-      setPastes(updated);
-      setEditingIndex(null);
+    if (editingInfo.folder !== null && editingInfo.index !== null) {
+      setFolders(
+        folders.map((folder) => {
+          if (folder.name === editingInfo.folder) {
+            const updated = [...folder.pastes];
+            updated[editingInfo.index] = {
+              ...updated[editingInfo.index],
+              content: text,
+              format: displayFormat,
+              updatedAt: new Date().toISOString(),
+            };
+            return { ...folder, pastes: updated };
+          }
+          return folder;
+        })
+      );
+      setEditingInfo({ folder: null, index: null });
     } else {
-      const newPaste = {
-        id: Date.now(),
-        content: text,
-        format: displayFormat,
-        createdAt: new Date().toISOString(),
-      };
-      setPastes([newPaste, ...pastes]);
+      setFolders(
+        folders.map((folder) => {
+          if (folder.name === selectedFolder) {
+            return {
+              ...folder,
+              pastes: [
+                {
+                  id: Date.now(),
+                  label: label.trim() || "Untitled",
+                  content: text,
+                  format: displayFormat,
+                  createdAt: new Date().toISOString(),
+                },
+
+                ...folder.pastes,
+              ],
+            };
+          }
+          return folder;
+        })
+      );
     }
+
     setText("");
+    setLabel("");
+
   };
 
-  // Edit existing paste
-  const handleEdit = (index) => {
-    setText(pastes[index].content);
-    setDisplayFormat(pastes[index].format);
-    setEditingIndex(index);
-  };
- 
-  // Delete paste
-  const handleDelete = (index) => {
-    const updated = pastes.filter((_, i) => i !== index);
-    setPastes(updated);
+  const handleEdit = (folderName, index) => {
+    const paste = folders.find((f) => f.name === folderName).pastes[index];
+    setText(paste.content);
+    setDisplayFormat(paste.format);
+    setEditingInfo({ folder: folderName, index });
   };
 
-  // Copy to clipboard
+  const handleDelete = (folderName, index) => {
+    setFolders(
+      folders.map((folder) =>
+        folder.name === folderName
+          ? { ...folder, pastes: folder.pastes.filter((_, i) => i !== index) }
+          : folder
+      )
+    );
+  };
+
   const handleCopy = (content) => {
-    navigator.clipboard.writeText(content);
-    alert("Copied to clipboard!");
-  };
+  navigator.clipboard.writeText(content);
 
-  // Format paste for display
+  setShowSnack(true);
+  setTimeout(() => setShowSnack(false), 2000); // Hide after 2s
+};
+
+
   const formatContent = (paste) => {
     try {
-      switch (paste.format) {
-        case "json":
-          return JSON.stringify(JSON.parse(paste.content), null, 2);
-        default:
-          return paste.content;
-      }
+      return paste.format === "json"
+        ? JSON.stringify(JSON.parse(paste.content), null, 2)
+        : paste.content;
     } catch {
       return paste.content;
     }
   };
 
+  const currentFolder = folders.find((f) => f.name === selectedFolder) || {
+    name: selectedFolder,
+    pastes: [],
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold text-white mb-6">Paste Manager</h1>
-
-      {/* Input Section */}
-      <div className="w-full max-w-4xl bg-gray-800 rounded-lg border border-gray-700 shadow-lg mb-6 overflow-hidden">
-        <div className="bg-gray-700 px-4 py-3 border-b border-gray-600 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span className="text-gray-300 text-sm ml-2">new-paste.txt</span>
+    // <div className="min-h-screen bg-gray-900 flex gap-6 p-6 items-center ">
+    <div className="min-h-screen bg-gray-900 flex gap-6 p-6 ml-16 transition-all duration-300">
+      <div className="w-60 bg-gray-800 border border-gray-700 rounded-lg p-4 h-fit">
+        <h2 className="text-gray-200 font-semibold mb-3">Folders</h2>
+        {folders.map((f) => (
+          <div
+            key={f.name}
+            onClick={() => setSelectedFolder(f.name)}
+            className={`px-3 py-2 rounded cursor-pointer text-sm mb-1 ${
+              selectedFolder === f.name
+                ? "bg-gray-600 text-white"
+                : "text-gray-300 hover:bg-gray-700"
+            }`}
+          >
+            {f.name}
           </div>
+        ))}
+
+        <div className="flex gap-2 mt-4">
+          <input
+            id="newFolderName"
+            className="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
+            placeholder="New Folder"
+          />
+          <button
+            onClick={createFolder}
+            className="px-2 bg-green-600 text-white rounded text-sm"
+          >
+            +
+          </button>
         </div>
+      </div>
 
-        <textarea
-          className="w-full h-32 bg-gray-800 text-gray-100 p-4 font-mono text-sm focus:outline-none resize-none"
-          placeholder="Paste your text, code, or JSON here..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
+      <div className="flex-1">
+        <h1 className="text-3xl font-bold text-white mb-6">Paste Manager</h1>
 
-        <div className="bg-gray-700 px-4 py-3 border-t border-gray-600 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <span className="text-gray-300 text-sm">Format:</span>
+        <div className="w-full bg-gray-800 rounded-lg border border-gray-700 shadow-lg mb-6 overflow-hidden">
+          <input
+            type="text"
+            placeholder="Label / Title (optional)"
+            className="w-full bg-gray-800 text-gray-200 px-4 py-2 border-b border-gray-700 focus:outline-none"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+          />
+
+          <textarea
+            className="w-full h-32 bg-gray-800 text-gray-100 p-4 font-mono text-sm focus:outline-none resize-none"
+            placeholder="Paste text/code/JSON..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+
+          <div className="bg-gray-700 px-4 py-3 border-t border-gray-600 flex justify-between items-center">
             <select
               value={displayFormat}
               onChange={(e) => setDisplayFormat(e.target.value)}
-              className="bg-gray-600 text-gray-100 px-3 py-1 rounded border border-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="bg-gray-600 text-gray-100 px-3 py-1 rounded border border-gray-500 text-sm"
             >
               <option value="text">Text</option>
               <option value="code">Code</option>
               <option value="json">JSON</option>
             </select>
-          </div>
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all font-medium"
-          >
-            {editingIndex !== null ? "Update Paste" : "Save Paste"}
-          </button>
-        </div>
-      </div>
 
-      {/* Pastes List */}
-      <div className="w-full max-w-4xl">
-        {pastes.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-500 text-lg mb-2">No pastes yet</div>
-            <div className="text-gray-400 text-sm">
-              Create your first paste above
-            </div>
+            <select
+              value={selectedFolder}
+              onChange={(e) => setSelectedFolder(e.target.value)}
+              className="bg-gray-600 text-gray-100 px-3 py-1 rounded border border-gray-500 text-sm"
+            >
+              {folders.map((folder) => (
+                <option key={folder.name} value={folder.name}>
+                  {folder.name}
+                </option>
+              ))}
+            </select>
+
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+            >
+              {editingInfo.index !== null ? "Update Paste" : "Save Paste"}
+            </button>
+          </div>
+        </div>
+
+        {currentFolder?.pastes.length === 0 ? (
+          <div className="text-gray-500 text-center">
+            No pastes in this folder
           </div>
         ) : (
-          pastes.map((paste, index) => (
+          currentFolder.pastes.map((paste, index) => (
             <div
               key={paste.id}
-              className="bg-gray-800 rounded-lg border border-gray-700 shadow-lg mb-4 overflow-hidden"
+              className="bg-gray-800 border border-gray-700 rounded-lg mb-4 overflow-hidden"
             >
-              {/* Header */}
-              <div className="bg-gray-700 px-4 py-3 border-b border-gray-600 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="text-gray-300 text-sm ml-2">
-                    paste-{index + 1}.
-                    {paste.format === "json"
-                      ? "json"
-                      : paste.format === "code"
-                      ? "js"
-                      : "txt"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
+              <div className="bg-gray-700 px-4 py-3 border-b border-gray-600 flex justify-between items-center">
+                <span className="text-gray-300 text-sm font-semibold">
+  {paste.label || `paste-${index + 1}`}
+</span>
+
+                <div className="flex gap-2">
                   <button
                     onClick={() => handleCopy(paste.content)}
-                    className="px-3 py-1 bg-gray-600 text-gray-200 rounded hover:bg-gray-500 transition-colors text-sm font-medium"
+                    className="px-3 py-1 bg-gray-600 text-gray-200 rounded text-sm"
                   >
                     Copy
                   </button>
                   <button
-                    onClick={() => handleEdit(index)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors text-sm font-medium"
+                    onClick={() => handleEdit(selectedFolder, index)}
+                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(index)}
-                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-500 transition-colors text-sm font-medium"
+                    onClick={() => handleDelete(selectedFolder, index)}
+                    className="px-3 py-1 bg-red-600 text-white rounded text-sm"
                   >
                     Delete
                   </button>
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="p-4 bg-gray-800">
-                <div className="p-4 bg-gray-800">
-  {paste.format === "code" ? (
-    <SyntaxHighlighter
-      language="javascript"
-      style={oneDark}
-      customStyle={{
-        backgroundColor: "#1f2937",
-        padding: "1rem",
-        borderRadius: "0.5rem",
-        fontSize: "0.9rem",
-      }}
-    >
-      {paste.content}
-    </SyntaxHighlighter>
-  ) : paste.format === "json" ? (
-    <SyntaxHighlighter
-      language="json"
-      style={oneDark}
-      customStyle={{
-        backgroundColor: "#1f2937",
-        padding: "1rem",
-        borderRadius: "0.5rem",
-        fontSize: "0.9rem",
-      }}
-    >
-      {formatContent(paste)}
-    </SyntaxHighlighter>
-  ) : (
-    <pre className="text-gray-100 font-mono text-sm whitespace-pre-wrap break-words">
-      {paste.content}
-    </pre>
-  )}
-</div>
-
-              </div>
-
-              {/* Footer */}
-              <div className="bg-gray-700 px-4 py-2 border-t border-gray-600 text-xs text-gray-400 flex justify-between">
-                <span>
-                  Created: {new Date(paste.createdAt).toLocaleString()}
-                </span>
-                <span>Length: {paste.content.length} characters</span>
+              <div className="p-4">
+                {paste.format === "code" ? (
+                  <SyntaxHighlighter language="javascript" style={oneDark}>
+                    {paste.content}
+                  </SyntaxHighlighter>
+                ) : paste.format === "json" ? (
+                  <SyntaxHighlighter language="json" style={oneDark}>
+                    {formatContent(paste)}
+                  </SyntaxHighlighter>
+                ) : (
+                  <pre className="text-gray-100 font-mono text-sm whitespace-pre-wrap break-words">
+                    {paste.content}
+                  </pre>
+                )}
               </div>
             </div>
           ))
         )}
       </div>
+      {showSnack && (
+  <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg border border-gray-700 animate-fade-in">
+    ✅ Copied to clipboard!
+  </div>
+)}
+
     </div>
   );
 };

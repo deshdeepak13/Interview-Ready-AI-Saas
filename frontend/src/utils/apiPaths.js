@@ -3,7 +3,8 @@
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL ||
   (window.location.hostname === "localhost"
-    ? "http://localhost:3000"
+    // ? "http://localhost:3000"
+    ? "https://interview-ready-ai-saas.onrender.com" // ✅ your real backend
     : "https://interview-ready-ai-saas.onrender.com"); // ✅ your real backend
 
 export const BASE_URL = BACKEND_URL.replace(/\/$/, ""); // ✅ ensure no trailing slash
